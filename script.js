@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('playerForm');
     const winnersList = document.getElementById('winnersList');
-    const ws = new WebSocket('ws://localhost:8080');
+    const ws = new WebSocket('https://drawingdrum.onrender.com');
 
     ws.onmessage = (event) => {
         const players = JSON.parse(event.data);

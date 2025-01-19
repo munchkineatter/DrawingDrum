@@ -1,0 +1,12 @@
+{
+  "name": "casino-drawing-promotion",
+  "version": "1.0.0",
+  "description": "A real-time application for casino drawing promotions",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.0.0"
+  }
+} 
