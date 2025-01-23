@@ -1,10 +1,24 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 20px;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #2c2c2c;
+}
+
+.container {
+    background-color: #3a3a3a;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 h1 {
-    color: #333;
+    color: #fff;
+    text-align: center;
 }
 
 form {
@@ -12,12 +26,23 @@ form {
 }
 
 label {
-    display: block;
-    margin-top: 10px;
+    display: inline-block;
+    width: 40px;
+    color: #fff;
+    text-align: right;
+    margin-right: 10px;
+    white-space: nowrap;
 }
 
 input {
     margin-bottom: 10px;
+    width: 300px;
+    padding: 5px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background-color: #4a4a4a;
+    color: #fff;
+    box-sizing: border-box;
 }
 
 button {
@@ -26,8 +51,39 @@ button {
     color: white;
     border: none;
     cursor: pointer;
+    margin-left: 5px;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 button:hover {
     background-color: #0056b3;
+}
+
+.player-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.add-row, .remove-row {
+    background-color: #28a745;
+    padding: 5px;
+    margin-left: 5px;
+}
+
+.remove-row {
+    background-color: #dc3545;
+}
+
+.add-row:hover {
+    background-color: #218838;
+}
+
+.remove-row:hover {
+    background-color: #c82333;
+}
+
+#timerDisplay {
+    color: white;
 } 

@@ -4,20 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Input Page</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Enter Player Information</h1>
-    <form id="playerForm">
-        <label for="name">Player Name:</label>
-        <input type="text" id="name" name="name" required>
-        <br>
-        <label for="cardNumber">Rewards Card Number:</label>
-        <input type="text" id="cardNumber" name="cardNumber" required>
-        <br>
-        <button type="submit">Submit</button>
-    </form>
+    <div class="container mt-5" style="max-width: 600px;">
+        <h1 class="text-center text-white">Enter Player Information</h1>
+        <form id="playerForm">
+            <div id="playerInputs">
+                <div class="form-row align-items-center mb-3 player-row">
+                    <label class="col-auto">1.</label>
+                    <input type="text" class="form-control col" name="playerInfo" required>
+                    <button type="button" class="btn btn-success ml-2 add-row">+</button>
+                    <button type="button" class="btn btn-danger ml-2 remove-row">-</button>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <div class="form-group mt-3">
+            <label for="headerImage" class="text-white">Upload Header Image:</label>
+            <input type="file" class="form-control-file" id="headerImage" accept="image/*">
+            <button type="button" class="btn btn-primary mt-2" id="uploadHeader">Set Header</button>
+        </div>
+        <div class="form-group">
+            <label class="text-white">Set Timer:</label>
+            <div class="form-row">
+                <div class="col">
+                    <input type="number" class="form-control" id="minutes" min="0" placeholder="Minutes">
+                </div>
+                <div class="col">
+                    <input type="number" class="form-control" id="seconds" min="0" max="59" placeholder="Seconds">
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html> 

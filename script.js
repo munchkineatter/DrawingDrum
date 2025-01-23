@@ -1,31 +1,95 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('playerForm');
-    const winnersList = document.getElementById('winnersList');
-    const ws = new WebSocket('https://drawingdrum.onrender.com');
+    const playerInputs = document.getElementById('playerInputs');
+    const headerImageInput = document.getElementById('headerImage');
+    const uploadHeaderButton = document.getElementById('uploadHeader');
+    const minutesInput = document.getElementById('minutes');
+    const secondsInput = document.getElementById('seconds');
+    const ws = new WebSocket('wss://drawingdrum.onrender.com');
 
     ws.onmessage = (event) => {
-        const players = JSON.parse(event.data);
-        if (winnersList) {
-            winnersList.innerHTML = ''; // Clear the list
-            players.forEach(player => {
-                const li = document.createElement('li');
-                li.textContent = `${player.name} - ${player.cardNumber}`;
-                winnersList.appendChild(li);
-            });
+        const data = JSON.parse(event.data);
+        if (data.type === 'players') {
+            const players = data.payload;
+            const winnersList = document.getElementById('winnersList');
+            if (winnersList) {
+                winnersList.innerHTML = ''; // Clear the list
+                players.forEach(player => {
+                    const li = document.createElement('li');
+                    li.textContent = player;
+                    winnersList.appendChild(li);
+                });
+            }
+        } else if (data.type === 'header') {
+            const headerImage = document.getElementById('headerImageDisplay');
+            if (headerImage) {
+                headerImage.src = data.payload;
+            }
+        } else if (data.type === 'timer') {
+            const timerDisplay = document.getElementById('timerDisplay');
+            if (timerDisplay) {
+                timerDisplay.textContent = `Time Remaining: ${data.payload} seconds`;
+            }
         }
     };
 
     if (form) {
         form.addEventListener('submit', (event) => {
             event.preventDefault();
-            const name = document.getElementById('name').value;
-            const cardNumber = document.getElementById('cardNumber').value;
+            const playerRows = document.querySelectorAll('.player-row');
+            const players = Array.from(playerRows).map((row, index) => {
+                const playerInfo = row.querySelector('input[name="playerInfo"]').value;
+                return `${index + 1}. ${playerInfo}`;
+            });
 
             // Send player information to the server
-            ws.send(JSON.stringify({ name, cardNumber }));
+            ws.send(JSON.stringify({ type: 'players', payload: players }));
+
+            // Calculate total time in seconds
+            const minutes = parseInt(minutesInput.value, 10) || 0;
+            const seconds = parseInt(secondsInput.value, 10) || 0;
+            const totalTime = minutes * 60 + seconds;
+
+            // Send timer information to the server
+            ws.send(JSON.stringify({ type: 'timer', payload: totalTime }));
 
             // Clear form fields
             form.reset();
         });
+
+        playerInputs.addEventListener('click', (event) => {
+            if (event.target.classList.contains('add-row')) {
+                const newRow = document.createElement('div');
+                newRow.classList.add('form-row', 'align-items-center', 'mb-3', 'player-row');
+                const rowCount = playerInputs.children.length + 1;
+                newRow.innerHTML = `
+                    <label class="col-auto">${rowCount}.</label>
+                    <input type="text" class="form-control col" name="playerInfo" required>
+                    <button type="button" class="btn btn-success ml-2 add-row">+</button>
+                    <button type="button" class="btn btn-danger ml-2 remove-row">-</button>
+                `;
+                playerInputs.appendChild(newRow);
+            } else if (event.target.classList.contains('remove-row')) {
+                if (playerInputs.children.length > 1) {
+                    event.target.parentElement.remove();
+                    // Update labels
+                    Array.from(playerInputs.children).forEach((row, index) => {
+                        row.querySelector('label').textContent = `${index + 1}.`;
+                    });
+                }
+            }
+        });
     }
+
+    uploadHeaderButton.addEventListener('click', () => {
+        const file = headerImageInput.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const imageData = e.target.result;
+                ws.send(JSON.stringify({ type: 'header', payload: imageData }));
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 }); 
