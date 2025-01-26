@@ -1,22 +1,56 @@
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ port: 8080 });
 
-let players = [];
+// Keep shared state in memory (in a real app, you might use a database)
+let playersList = [];
+let currentHeader = null;
+let currentTimer = 0;
+
+// Helper function to broadcast a message to all clients
+function broadcast(messageObj) {
+    const messageStr = JSON.stringify(messageObj);
+    wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(messageStr);
+        }
+    });
+}
 
 wss.on('connection', (ws) => {
-    // Send the current list of players to the new connection
-    ws.send(JSON.stringify(players));
+    // When a new client connects, send them the current state
+    ws.send(JSON.stringify({ type: 'players', payload: playersList }));
+    if (currentHeader) {
+        ws.send(JSON.stringify({ type: 'header', payload: currentHeader }));
+    }
+    if (currentTimer > 0) {
+        ws.send(JSON.stringify({ type: 'timer', payload: currentTimer }));
+    }
 
-    ws.on('message', (message) => {
-        const player = JSON.parse(message);
-        players.push(player);
+    ws.on('message', (msg) => {
+        const data = JSON.parse(msg);
 
-        // Broadcast the updated list to all connected clients
-        wss.clients.forEach((client) => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify(players));
-            }
-        });
+        switch (data.type) {
+            case 'players':
+                // Replace the entire list of players with the new one
+                playersList = data.payload;
+                broadcast({ type: 'players', payload: playersList });
+                break;
+            
+            case 'header':
+                // Store the uploaded header image (base64) and broadcast
+                currentHeader = data.payload;
+                broadcast({ type: 'header', payload: currentHeader });
+                break;
+            
+            case 'timer':
+                // Store the timer value (in seconds) and broadcast
+                currentTimer = data.payload;
+                broadcast({ type: 'timer', payload: currentTimer });
+                break;
+            
+            default:
+                console.log('Unknown message type:', data);
+        }
     });
 });
 
