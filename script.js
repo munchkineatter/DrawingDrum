@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadHeaderButton = document.getElementById('uploadHeader');
     const minutesInput = document.getElementById('minutes');
     const secondsInput = document.getElementById('seconds');
-    const ws = new WebSocket('wss://drawingdrum.onrender.com');
+    const ws = new WebSocket('https://drawingdrum.onrender.com');
 
     ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
