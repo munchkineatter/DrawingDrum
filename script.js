@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadHeaderButton = document.getElementById('uploadHeader');
     const minutesInput = document.getElementById('minutes');
     const secondsInput = document.getElementById('seconds');
+    const textSizeInput = document.getElementById('textSize');
+    const startTimerButton = document.getElementById('startTimer');
     const ws = new WebSocket('https://drawingdrum.onrender.com');
 
     ws.onmessage = (event) => {
@@ -29,7 +31,15 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (data.type === 'timer') {
             const timerDisplay = document.getElementById('timerDisplay');
             if (timerDisplay) {
-                timerDisplay.textContent = `Time Remaining: ${data.payload} seconds`;
+                const totalSec = data.payload; 
+                const mm = String(Math.floor(totalSec / 60)).padStart(2, '0');
+                const ss = String(totalSec % 60).padStart(2, '0');
+                timerDisplay.textContent = `Time Remaining: ${mm}:${ss}`;
+            }
+        } else if (data.type === 'fontSize') {
+            const winnersList = document.getElementById('winnersList');
+            if (winnersList) {
+                winnersList.style.fontSize = data.payload + 'px';
             }
         }
     };
@@ -45,6 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Send player information to the server
             ws.send(JSON.stringify({ type: 'players', payload: players }));
+
+            // Also broadcast the new font size
+            const fontSize = parseInt(textSizeInput.value, 10) || 16;
+            ws.send(JSON.stringify({
+                type: 'fontSize',
+                payload: fontSize
+            }));
 
             // Calculate total time in seconds
             const minutes = parseInt(minutesInput.value, 10) || 0;
@@ -93,4 +110,17 @@ document.addEventListener('DOMContentLoaded', () => {
             reader.readAsDataURL(file);
         }
     });
+
+    if (startTimerButton) {
+        startTimerButton.addEventListener('click', () => {
+            const minutes = parseInt(minutesInput.value, 10) || 0;
+            const seconds = parseInt(secondsInput.value, 10) || 0;
+            const totalTime = minutes * 60 + seconds;
+
+            ws.send(JSON.stringify({
+                type: 'timer',
+                payload: totalTime
+            }));
+        });
+    }
 }); 

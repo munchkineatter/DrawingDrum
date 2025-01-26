@@ -5,6 +5,7 @@ const wss = new WebSocket.Server({ port: 8080 });
 let playersList = [];
 let currentHeader = null;
 let currentTimer = 0;
+let currentFontSize = 16;
 
 // Helper function to broadcast a message to all clients
 function broadcast(messageObj) {
@@ -25,6 +26,7 @@ wss.on('connection', (ws) => {
     if (currentTimer > 0) {
         ws.send(JSON.stringify({ type: 'timer', payload: currentTimer }));
     }
+    ws.send(JSON.stringify({ type: 'fontSize', payload: currentFontSize }));
 
     ws.on('message', (msg) => {
         const data = JSON.parse(msg);
@@ -46,6 +48,11 @@ wss.on('connection', (ws) => {
                 // Store the timer value (in seconds) and broadcast
                 currentTimer = data.payload;
                 broadcast({ type: 'timer', payload: currentTimer });
+                break;
+            
+            case 'fontSize':
+                currentFontSize = data.payload;
+                broadcast({ type: 'fontSize', payload: currentFontSize });
                 break;
             
             default:
