@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 winnersList.innerHTML = ''; // Clear the list
                 players.forEach(player => {
                     const li = document.createElement('li');
+                    li.classList.add('list-group-item', 'bg-dark', 'text-white');
                     li.textContent = player;
                     winnersList.appendChild(li);
                 });
